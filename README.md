@@ -4,6 +4,8 @@ RxForge is an interactive outpatient-pharmacy training prototype from Aegis
 Healthware. It presents 15 fictional workflow scenarios and asks pharmacy
 trainees to choose the safest next action.
 
+**Live demo:** [Launch RxForge](https://aegis-rxforge.lorenmog.chatgpt.site/)
+
 The module provides immediate feedback, a running score, and links to FDA, DEA,
 and HHS reference material. A score of 12 out of 15 (80%) passes the module. It
 is an educational prototype, not clinical or legal guidance, and it does not
