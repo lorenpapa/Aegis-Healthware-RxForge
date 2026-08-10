@@ -36,6 +36,14 @@ test("scenario answer positions are valid, balanced, and retain the original cor
     );
     assert.equal(scenario.options.length, 3, `${scenario.title} must have A, B, and C choices`);
     assert.ok(scenario.explanation.trim(), `${scenario.title} must have an explanation`);
+    assert.ok(scenario.visual.icon.trim(), `${scenario.title} must have a visual icon`);
+    assert.ok(scenario.visual.label.trim(), `${scenario.title} must have a visual label`);
+    assert.ok(scenario.visual.caption.trim(), `${scenario.title} must have a visual caption`);
+    assert.equal(scenario.feedback.length, scenario.options.length, `${scenario.title} must have feedback for every choice`);
+    scenario.feedback.forEach((feedback, answerIndex) => {
+      assert.ok(feedback.why.trim(), `${scenario.title} answer ${answerIndex + 1} must explain why`);
+      assert.ok(feedback.consequence.trim(), `${scenario.title} answer ${answerIndex + 1} must explain the consequence`);
+    });
     const sourceUrl = new URL(scenario.source.url);
     assert.equal(sourceUrl.protocol, "https:", `${scenario.title} must use HTTPS`);
     assert.ok(
@@ -51,4 +59,5 @@ test("scenario answer positions are valid, balanced, and retain the original cor
   }
 
   assert.deepEqual(positionCounts, [5, 5, 5]);
+  assert.equal(new Set(scenarios.map((scenario) => scenario.visual.label)).size, 15);
 });

@@ -201,6 +201,24 @@ type ScenarioCardProps = {
   onNextQuestion: () => void;
 };
 
+function ScenarioVisual({ scenario }: { scenario: Scenario }) {
+  return (
+    <figure className="scenario-visual" aria-label={scenario.visual.label}>
+      <div className="visual-art" aria-hidden="true">
+        <span className="visual-pulse" />
+        <span className="visual-icon">{scenario.visual.icon}</span>
+        <span className="visual-line line-one" />
+        <span className="visual-line line-two" />
+        <span className="visual-check">Rx</span>
+      </div>
+      <figcaption>
+        <b>{scenario.visual.label}</b>
+        <span>{scenario.visual.caption}</span>
+      </figcaption>
+    </figure>
+  );
+}
+
 function ScenarioCard({
   scenario,
   selectedAnswer,
@@ -210,12 +228,16 @@ function ScenarioCard({
 }: ScenarioCardProps) {
   const answered = selectedAnswer !== null;
   const answeredCorrectly = selectedAnswer === scenario.correct;
+  const selectedFeedback =
+    selectedAnswer === null ? null : scenario.feedback[selectedAnswer];
 
   return (
     <article className="scenario">
       <p className="decision-label">DECISION REQUIRED</p>
       <h2>{scenario.title}</h2>
       <p className="detail">{scenario.detail}</p>
+
+      <ScenarioVisual scenario={scenario} />
 
       <div className="options">
         {scenario.options.map((option, optionIndex) => {
@@ -250,7 +272,27 @@ function ScenarioCard({
             <strong>{answeredCorrectly ? "Correct" : "Not quite"}</strong>
           </div>
           <div className="feedback-copy">
-            <p>{scenario.explanation}</p>
+            {answeredCorrectly ? (
+              <>
+                <h3>Why this is the safe call</h3>
+                <p>{scenario.explanation}</p>
+              </>
+            ) : (
+              <div className="feedback-lessons">
+                <section>
+                  <h3>Why this is unsafe</h3>
+                  <p>{selectedFeedback?.why}</p>
+                </section>
+                <section className="consequence">
+                  <h3>What could happen</h3>
+                  <p>{selectedFeedback?.consequence}</p>
+                </section>
+                <section>
+                  <h3>Safer action</h3>
+                  <p>{scenario.options[scenario.correct]}</p>
+                </section>
+              </div>
+            )}
             <a href={scenario.source.url} target="_blank" rel="noreferrer">
               <b>{scenario.source.agency}</b> {scenario.source.label} ↗
             </a>

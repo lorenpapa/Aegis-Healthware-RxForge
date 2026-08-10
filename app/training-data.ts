@@ -12,6 +12,15 @@ export type Scenario = {
   options: string[];
   correct: number;
   explanation: string;
+  visual: {
+    icon: string;
+    label: string;
+    caption: string;
+  };
+  feedback: Array<{
+    why: string;
+    consequence: string;
+  }>;
   source: Source;
 };
 
@@ -52,6 +61,12 @@ export const scenarios: Scenario[] = [
     correct: 1,
     explanation:
       "Verify the patient with the pharmacy's required identifiers before opening either profile. Asking what medication she expects does not distinguish two patients and may reinforce the wrong record. A recent prescription date is not proof of identity and must not be used to choose between profiles.",
+    visual: { icon: "ID", label: "Identity checkpoint", caption: "Two similar profiles require independent identifiers." },
+    feedback: [
+      { why: "The expected medicine is not an identity identifier and either Maya could name the same drug.", consequence: "The wrong profile could be opened and another patient's prescription could be released or disclosed." },
+      { why: "Full name and date of birth independently distinguish the two profiles before either record is selected.", consequence: "The correct patient record stays connected to the correct prescription." },
+      { why: "A recent prescription date does not prove which Maya is standing at the counter.", consequence: "Recency could steer the transaction to the wrong patient and cause a wrong-patient sale." },
+    ],
     source: {
       agency: "FDA",
       label: "Medication Errors Related to CDER-Regulated Products",
@@ -72,6 +87,12 @@ export const scenarios: Scenario[] = [
     correct: 2,
     explanation:
       "Stop when the scanned product does not match the system selection. Compare the prescription and stock package, including the drug, strength, dosage form, and NDC, before continuing. Matching only the drug name can miss a wrong strength or formulation. Filling first and checking later allows the wrong product to move further through production.",
+    visual: { icon: "NDC", label: "Product mismatch", caption: "Look-alike cartons can hide a different strength or dosage form." },
+    feedback: [
+      { why: "The same drug name can appear on several strengths and dosage forms; the mismatch alert is unresolved.", consequence: "A patient could receive an overdose, underdose, or inappropriate formulation." },
+      { why: "Filling before resolving the alert lets the suspect product move deeper into the workflow.", consequence: "The wrong item could be labeled, checked, or dispensed before the mismatch is caught." },
+      { why: "Comparing the prescription, NDC, strength, and dosage form resolves the exact source of the alert.", consequence: "The intended product is confirmed before production continues." },
+    ],
     source: {
       agency: "FDA",
       label: "Safety Considerations to Minimize Medication Errors",
@@ -92,6 +113,12 @@ export const scenarios: Scenario[] = [
     correct: 0,
     explanation:
       "Do not enter a strength that cannot be read reliably. Place the prescription on hold and give it to the pharmacist for clarification. Entering 10 mg creates an unsupported order even if a note is added. A previous fill may have changed and cannot replace pharmacist review of the current prescription.",
+    visual: { icon: "10?", label: "Unclear prescription", caption: "An unreadable strength must be clarified, not guessed." },
+    feedback: [
+      { why: "Holding the prescription prevents an unsupported strength from entering the workflow while the pharmacist clarifies it.", consequence: "The order remains paused until the prescriber's intended strength is confirmed." },
+      { why: "A note does not make a guessed 10 mg entry accurate or authorized.", consequence: "The patient could receive one quarter of the intended dose—or the wrong dose entirely." },
+      { why: "A previous fill may no longer match the current prescription and cannot replace clarification.", consequence: "A changed therapy could be silently overwritten with outdated directions." },
+    ],
     source: {
       agency: "FDA",
       label: "Medication Errors and Confusing Prescribing Information",
@@ -112,6 +139,12 @@ export const scenarios: Scenario[] = [
     correct: 2,
     explanation:
       "Ask the pharmacist to speak with the patient because deciding whether ibuprofen is safe with an anticoagulant requires patient-specific clinical assessment. Saying occasional use is usually fine gives unauthorized advice and may overlook bleeding risk or other factors. Reading an interaction result aloud does not replace the pharmacist's interpretation and counseling.",
+    visual: { icon: "RPh", label: "Clinical handoff", caption: "Drug-interaction questions require pharmacist assessment." },
+    feedback: [
+      { why: "Saying use is usually fine is patient-specific clinical advice outside the technician role.", consequence: "Ibuprofen with an anticoagulant may increase bleeding risk or delay safer treatment advice." },
+      { why: "An interaction result needs clinical interpretation in the context of the patient's medicines and history.", consequence: "Raw information may be misunderstood as approval and expose the patient to preventable harm." },
+      { why: "The pharmacist can assess the patient's full situation and provide authorized counseling.", consequence: "The patient receives an individualized, clinically appropriate recommendation." },
+    ],
     source: {
       agency: "FDA",
       label: "Find FDA-Approved Drug Information",
@@ -132,6 +165,12 @@ export const scenarios: Scenario[] = [
     correct: 1,
     explanation:
       "Do not complete pickup until the required Medication Guide is provided in the permitted form. Offering it at a later fill does not meet the current dispensing requirement. Telling the patient to find it online shifts the pharmacy's responsibility to the patient; electronic delivery is appropriate only when handled as permitted and requested by the patient.",
+    visual: { icon: "GUIDE", label: "Required labeling", caption: "The Medication Guide belongs with the current dispensing." },
+    feedback: [
+      { why: "The required guide must accompany this dispensing, not a future one.", consequence: "The patient may leave without critical warnings or safe-use information." },
+      { why: "Pausing the sale ensures the required patient labeling is supplied before completion.", consequence: "The patient receives the safety information tied to the medicine being dispensed." },
+      { why: "Directing the patient to search later shifts the pharmacy's responsibility and may not meet delivery requirements.", consequence: "The patient may never see time-sensitive warnings, contraindications, or instructions." },
+    ],
     source: {
       agency: "FDA",
       label: "FDA Patient Labeling Resources",
@@ -152,6 +191,12 @@ export const scenarios: Scenario[] = [
     correct: 0,
     explanation:
       "Notify the pharmacist promptly so the patient's current condition can be assessed and urgent care can be recommended if needed. Then document and report the event through the pharmacy's process; patients and health professionals may report serious problems to MedWatch. Reporting is not limited to manufacturers, and a register note alone neither addresses immediate safety nor completes appropriate follow-up.",
+    visual: { icon: "!", label: "Adverse event", caption: "A serious reaction needs prompt clinical escalation and reporting." },
+    feedback: [
+      { why: "Prompt pharmacist review addresses the patient's current safety and starts the proper reporting process.", consequence: "Urgent symptoms can be assessed and the event can reach the appropriate safety system." },
+      { why: "Patients and health professionals can report serious events; reporting is not limited to manufacturers.", consequence: "The reaction could go unassessed and valuable safety information could be lost." },
+      { why: "A register note is not a clinical assessment and does not complete adverse-event follow-up.", consequence: "A patient needing urgent care might receive no guidance, and the event may never be reported." },
+    ],
     source: {
       agency: "FDA",
       label: "MedWatch Safety Reporting Program",
@@ -172,6 +217,12 @@ export const scenarios: Scenario[] = [
     correct: 0,
     explanation:
       "Pause the fill and give the pharmacist all relevant facts. The pharmacist, not the technician, must determine whether the prescription was issued for a legitimate medical purpose and whether the concerns have been resolved. Filling simply to calm the patient bypasses that review. Permanently refusing on your own also exceeds the technician's role and treats warning signs as proof rather than information requiring pharmacist judgment.",
+    visual: { icon: "C-II", label: "Red-flag review", caption: "Warning signs require pharmacist judgment—not shortcuts." },
+    feedback: [
+      { why: "Pausing and sharing every relevant fact lets the pharmacist evaluate the prescription appropriately.", consequence: "Potential diversion or invalid prescribing concerns are reviewed before dispensing." },
+      { why: "Pressure from the patient does not resolve the red flags or replace pharmacist review.", consequence: "A potentially invalid controlled prescription could be dispensed and patient or public safety harmed." },
+      { why: "Red flags require investigation; a technician should not treat them as proof or make the final refusal decision.", consequence: "A legitimate patient could be denied treatment without the required professional review." },
+    ],
     source: {
       agency: "DEA",
       label: "DEA Pharmacist's Manual (Revised 2022)",
@@ -192,6 +243,12 @@ export const scenarios: Scenario[] = [
     correct: 2,
     explanation:
       "Leave the prescription unchanged and ask the pharmacist to verify the timing and the patient's report of prescriber approval. A patient statement does not authorize a technician to change prescription information, and promising a fill date is inappropriate. Timing may depend on the drug's schedule, prescription, dispensing history, state law, insurer restrictions, prescriber instructions, pharmacist judgment, and pharmacy policy; federal law does not create one universal early-fill date.",
+    visual: { icon: "DATE", label: "Early-fill request", caption: "Timing depends on verified facts, law, policy, and pharmacist review." },
+    feedback: [
+      { why: "A patient's statement does not authorize a technician to alter prescription dates or directions.", consequence: "The record could be falsified and a controlled medicine dispensed outside permitted timing." },
+      { why: "A technician cannot promise a fill date before all legal, clinical, insurance, and policy checks are complete.", consequence: "The promise may be wrong and can escalate conflict or pressure staff to bypass safeguards." },
+      { why: "Leaving the order unchanged preserves the record while the pharmacist verifies the request.", consequence: "Any early fill proceeds only after the relevant facts and requirements are reviewed." },
+    ],
     source: {
       agency: "DEA",
       label: "DEA Pharmacist's Manual",
@@ -212,6 +269,12 @@ export const scenarios: Scenario[] = [
     correct: 1,
     explanation:
       "Stop unexplained handling of the affected stock and notify the pharmacist-in-charge so the discrepancy can be recounted, investigated, and documented. Changing the record to match the expected number creates an inaccurate record and can hide a loss. Waiting to investigate alone delays review and makes the cause harder to determine. Not every discrepancy is a federally reportable significant loss, but the pharmacy must investigate and determine whether reporting is required.",
+    visual: { icon: "#?", label: "Count discrepancy", caption: "Physical stock and the perpetual inventory do not match." },
+    feedback: [
+      { why: "Editing the record to the expected number conceals rather than resolves the discrepancy.", consequence: "A counting error, documentation problem, theft, or significant loss could remain hidden." },
+      { why: "Securing the affected stock and notifying the pharmacist-in-charge preserves evidence for investigation.", consequence: "The discrepancy can be recounted, documented, and reported if required." },
+      { why: "Waiting and counting alone delays escalation and removes independent review.", consequence: "Evidence may be lost, the discrepancy may grow, and required reporting could be delayed." },
+    ],
     source: {
       agency: "DEA",
       label: "DEA Theft/Loss Reporting",
@@ -232,6 +295,12 @@ export const scenarios: Scenario[] = [
     correct: 0,
     explanation:
       "Direct the patient to an authorized take-back location or the pharmacy's approved collection receptacle, if the site has one. Do not accept a loose bag across an ordinary pharmacy counter; controlled-substance collection must use an authorized method. Flushing is not the default for every medicine and is reserved for certain products when an appropriate take-back option is not readily available.",
+    visual: { icon: "DROP", label: "Safe disposal", caption: "Unused opioids belong in an authorized take-back pathway." },
+    feedback: [
+      { why: "Authorized take-back options use approved collection and disposal controls.", consequence: "Unused opioids are removed from the home while limiting diversion and environmental harm." },
+      { why: "An ordinary pharmacy counter is not automatically an authorized controlled-substance collection point.", consequence: "Loose opioids could be lost, diverted, mishandled, or accepted outside required controls." },
+      { why: "Flushing is not the default for every medicine and should follow product-specific guidance when take-back is unavailable.", consequence: "Unnecessary flushing can cause environmental harm and still provide incorrect disposal advice." },
+    ],
     source: {
       agency: "DEA",
       label: "DEA Year-Round Drug Disposal",
@@ -252,6 +321,12 @@ export const scenarios: Scenario[] = [
     correct: 2,
     explanation:
       "Do not independently confirm prescription information to the caller. Follow the pharmacy's process or refer the call to the pharmacist to determine whether a limited disclosure is permitted based on the caller's identity and involvement in the patient's care or payment. Knowing the patient's address and birth date does not establish authority. Saying only that it is ready can still disclose protected information.",
+    visual: { icon: "LOCK", label: "Protected call", caption: "Knowing demographics does not establish permission to receive PHI." },
+    feedback: [
+      { why: "Even confirming that a prescription is ready reveals protected information about the patient.", consequence: "A sensitive treatment or condition could be disclosed to an unauthorized family member." },
+      { why: "Matching demographics can help verify identity but do not prove the caller has authority to receive information.", consequence: "Protected prescription details could be released to anyone who knows basic personal data." },
+      { why: "The pharmacy's verification process allows an authorized, appropriately limited disclosure when permitted.", consequence: "Patient privacy is protected while legitimate caregivers can still be assisted correctly." },
+    ],
     source: {
       agency: "HHS",
       label: "HIPAA Disclosures to Family and Friends",
@@ -272,6 +347,12 @@ export const scenarios: Scenario[] = [
     correct: 1,
     explanation:
       "Offer to continue in the pharmacy's available private area or away from the line. Continuing at the same volume allows others to hear protected information. Merely lowering your voice while nearby customers remain within hearing distance may not provide a reasonable safeguard for a sensitive discussion.",
+    visual: { icon: "QUIET", label: "Privacy safeguard", caption: "Sensitive conversations should move beyond the waiting line's hearing range." },
+    feedback: [
+      { why: "Continuing in place allows nearby customers to hear sensitive health information.", consequence: "The patient's diagnosis or treatment could be exposed to strangers." },
+      { why: "Moving to the available private area is a reasonable safeguard for the discussion.", consequence: "The patient can speak freely without unnecessarily disclosing protected information." },
+      { why: "Lowering your voice may not be enough when the line remains within hearing distance.", consequence: "Fragments of a sensitive diagnosis or medication discussion could still be overheard." },
+    ],
     source: {
       agency: "HHS",
       label: "The HIPAA Privacy Rule",
@@ -292,6 +373,12 @@ export const scenarios: Scenario[] = [
     correct: 2,
     explanation:
       "Stop the transaction and verify the patient using the pharmacy's required identifiers before selecting a profile or releasing the bag. Similar names do not establish that the register and prescription belong to the same person. Asking the customer to repeat only the name displayed on the screen does not independently verify identity and may lead the response.",
+    visual: { icon: "≠", label: "Register mismatch", caption: "Olivia and Olive are not interchangeable identities." },
+    feedback: [
+      { why: "Similar names are not proof that the bag and register belong to the same patient.", consequence: "The wrong prescription could be sold and another patient's information disclosed." },
+      { why: "Showing or leading with the displayed name is not an independent identity check.", consequence: "The customer may simply agree, allowing the mismatch to pass unnoticed." },
+      { why: "Stopping and verifying required identifiers resolves which patient and profile belong in the transaction.", consequence: "The correct prescription is released to the correct person and the register record stays accurate." },
+    ],
     source: {
       agency: "FDA",
       label: "FDA Medication Error Prevention",
@@ -312,6 +399,12 @@ export const scenarios: Scenario[] = [
     correct: 0,
     explanation:
       "Keep the affected product separate from usable inventory and notify the pharmacist or designated inventory lead. FDA-approved labeling provides product-specific storage and handling conditions, while deciding whether an excursion is acceptable may also require manufacturer stability information and pharmacy policy. Returning the product to stock or merely cooling it back to the usual temperature does not establish that its quality was preserved.",
+    visual: { icon: "°F", label: "Cold-chain excursion", caption: "Returning to range does not reverse possible temperature damage." },
+    feedback: [
+      { why: "Quarantining the product prevents use while stability information and policy are checked.", consequence: "Potentially compromised medicine stays out of patient stock until disposition is confirmed." },
+      { why: "An excursion indicator means the product's acceptability has not yet been established.", consequence: "A degraded or ineffective medicine could be dispensed to a patient." },
+      { why: "Cooling the product again does not prove that potency or quality was preserved during the excursion.", consequence: "The product could look normal while no longer meeting its labeled stability requirements." },
+    ],
     source: {
       agency: "FDA",
       label: "FDA Prescribing Information Resources",
@@ -332,6 +425,12 @@ export const scenarios: Scenario[] = [
     correct: 1,
     explanation:
       "Stop the item from moving forward, notify the pharmacist, correct the mislabeled bottle, and document the near miss under pharmacy policy. Correcting it silently prevents the pharmacy from identifying how the error occurred and reducing recurrence. Deleting or recreating records to hide the event damages the audit trail and does not address the underlying safety problem.",
+    visual: { icon: "LABEL", label: "Near-miss stop", caption: "A caught error is still a chance to prevent recurrence." },
+    feedback: [
+      { why: "A silent correction fixes one bottle but hides how the workflow failed.", consequence: "The same labeling error could recur later and reach a patient." },
+      { why: "Stopping, correcting, escalating, and documenting protects the current patient and supports system improvement.", consequence: "The immediate error is contained and the pharmacy can reduce recurrence." },
+      { why: "Deleting and recreating records to remove the trace damages the audit trail and conceals the near miss.", consequence: "Investigators lose evidence, accountability is weakened, and the underlying hazard remains." },
+    ],
     source: {
       agency: "FDA",
       label: "Medication Error Reporting and Prevention",
