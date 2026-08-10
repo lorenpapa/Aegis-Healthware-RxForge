@@ -15,6 +15,15 @@ Training content is educational. Technician responsibilities vary by
 jurisdiction and must follow applicable law, pharmacist supervision, and
 pharmacy policy.
 
+## Screenshots
+
+| Scenario visual | Choice-specific safety feedback |
+| --- | --- |
+| ![RxForge scenario with a pharmacy workflow visual](docs/screenshots/question-visual.jpg) | ![RxForge incorrect-answer explanation showing why the choice is unsafe, its consequence, and the safer action](docs/screenshots/wrong-answer-feedback.jpg) |
+| **Correct-answer confirmation** | **Completion summary** |
+| ![RxForge correct-answer confirmation](docs/screenshots/correct-answer-feedback.jpg) | ![RxForge final score and completion summary](docs/screenshots/results-summary.jpg) |
+
+
 ## What the prototype includes
 
 - 15 decision-based outpatient-pharmacy scenarios
